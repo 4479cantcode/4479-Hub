@@ -1,6 +1,3 @@
-# New example script written by Giang
-# You can suggest changes with a pull request or something
-
 ```lua
 local repo = 'https://raw.githubusercontent.com/Articles-Hub/ROBLOXScript/refs/heads/main/Library/LinoriaLib/'
 
