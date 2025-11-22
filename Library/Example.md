@@ -2,8 +2,8 @@
 local repo = 'https://raw.githubusercontent.com/Articles-Hub/ROBLOXScript/refs/heads/main/Library/LinoriaLib/'
 
 local Library = loadstring(game:HttpGet(repo .. 'Source.lua'))()
-local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
-local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'Addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'Addons/SaveManager.lua'))()
 ```
 
 # Window
