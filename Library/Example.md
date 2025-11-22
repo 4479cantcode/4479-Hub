@@ -1,5 +1,5 @@
 ```lua
-local repo = 'https://raw.githubusercontent.com/Articles-Hub/ROBLOXScript/refs/heads/main/Library/LinoriaLib/'
+local repo = 'https://raw.githubusercontent.com/4479cantcode/4479-Hub/tree/main/Library'
 
 local Library = loadstring(game:HttpGet(repo .. 'Source.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'Addons/ThemeManager.lua'))()
