@@ -5,7 +5,7 @@ This documentation is for the stable release of Orion Library.
 
 ## Booting the Library
 ```lua
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source](https://raw.githubusercontent.com/4479cantcode/4479-Hub/refs/heads/main/Library/Orion/source')))()
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/4479cantcode/4479-Hub/refs/heads/main/Library/Orion/source"))()
 ```
 
 
