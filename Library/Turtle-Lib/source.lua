@@ -12,7 +12,6 @@ local colorPickers = {}
 
 if game.CoreGui:FindFirstChild('TurtleUiLib') then
     game.CoreGui:FindFirstChild('TurtleUiLib'):Destroy()
-    destroyed = true
 end
 
 function Lerp(a, b, c)
