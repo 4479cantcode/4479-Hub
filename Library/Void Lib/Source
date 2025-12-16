@@ -2145,16 +2145,375 @@ end
 local pickers = {}
 
 function library.createcolorpicker(default, defaultalpha, parent, count, flag, callback)
-    local icon = utility.create("Square", {
-        Filled = true,
-        Thickness = 0,
-        Color = default,
-        Parent = parent,
-        Transparency = defaultalpha,
-        Size = UDim2.new(0, 18, 0, 10),
-        Position = UDim2.new(1, -18 - (count * 18) - (count * 6), 0, 2),
-        ZIndex = 8
+    library.flags = library.flags or {}
+    library.options = library.options or {}
+    utility.table = utility.table or function(t) return t or {} end
+
+    local opened = false
+    local hue, sat, val = 0, 1, 1
+    local alpha = tonumber(defaultalpha) or 1
+    alpha = math.clamp(alpha, 0, 1)
+
+    local function rgb_to_hsv(c)
+        local r, g, b = c.R, c.G, c.B
+        local mx = math.max(r, g, b)
+        local mn = math.min(r, g, b)
+        local d = mx - mn
+
+        local h = 0
+        if d ~= 0 then
+            if mx == r then
+                h = ((g - b) / d) % 6
+            elseif mx == g then
+                h = ((b - r) / d) + 2
+            else
+                h = ((r - g) / d) + 4
+            end
+            h = h / 6
+        end
+
+        local s = (mx == 0) and 0 or (d / mx)
+        local v = mx
+        return h, s, v
+    end
+
+    local function hsv_to_rgb(h, s, v)
+        h = (h % 1) * 6
+        local i = math.floor(h)
+        local f = h - i
+        local p = v * (1 - s)
+        local q = v * (1 - s * f)
+        local t = v * (1 - s * (1 - f))
+
+        if i == 0 then return Color3.new(v, t, p) end
+        if i == 1 then return Color3.new(q, v, p) end
+        if i == 2 then return Color3.new(p, v, t) end
+        if i == 3 then return Color3.new(p, q, v) end
+        if i == 4 then return Color3.new(t, p, v) end
+        return Color3.new(v, p, q)
+    end
+
+    local function set_flag(col, a)
+        library.flags[flag] = { Color = col, Alpha = a }
+        callback(col, a)
+    end
+
+    local base = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(1, 0, 0, 22),
+        Position = UDim2.new(0, 0, 0, (count * 24)),
+        ZIndex = 7,
+        Parent = parent
     })
+
+    local button = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        ZIndex = 8,
+        Parent = base
+    })
+
+    local preview = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 26, 0, 14),
+        Position = UDim2.new(1, -32, 0.5, -7),
+        ZIndex = 9,
+        Parent = button
+    })
+
+    local previewstroke = utility.create("Stroke", {
+        Transparency = 0,
+        Thickness = 1,
+        ZIndex = 10,
+        Parent = preview
+    })
+
+    local drop = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 190, 0, 170),
+        Position = UDim2.new(1, -190, 1, 6),
+        ZIndex = 50,
+        Visible = false,
+        Parent = base
+    })
+
+    local dropstroke = utility.create("Stroke", {
+        Transparency = 0,
+        Thickness = 1,
+        ZIndex = 51,
+        Parent = drop
+    })
+
+    local sv = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 140, 0, 120),
+        Position = UDim2.new(0, 10, 0, 10),
+        ZIndex = 52,
+        Parent = drop
+    })
+
+    local svstroke = utility.create("Stroke", {
+        Transparency = 0,
+        Thickness = 1,
+        ZIndex = 53,
+        Parent = sv
+    })
+
+    local sv_white = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        ZIndex = 54,
+        Parent = sv
+    })
+    local sv_whitegrad = utility.create("Gradient", {
+        Rotation = 0,
+        Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 1, 1)),
+        Transparency = NumberSequence.new(0, 1),
+        Parent = sv_white
+    })
+
+    local sv_black = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        ZIndex = 55,
+        Parent = sv
+    })
+    local sv_blackgrad = utility.create("Gradient", {
+        Rotation = 90,
+        Color = ColorSequence.new(Color3.new(0, 0, 0), Color3.new(0, 0, 0)),
+        Transparency = NumberSequence.new(1, 0),
+        Parent = sv_black
+    })
+
+    local sv_cursor = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 6, 0, 6),
+        Position = UDim2.new(0, 0, 0, 0),
+        ZIndex = 56,
+        Parent = sv
+    })
+    local sv_cursorstroke = utility.create("Stroke", {
+        Transparency = 0,
+        Thickness = 1,
+        ZIndex = 57,
+        Parent = sv_cursor
+    })
+
+    local huebar = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 14, 0, 120),
+        Position = UDim2.new(0, 160, 0, 10),
+        ZIndex = 52,
+        Parent = drop
+    })
+
+    local huebarstroke = utility.create("Stroke", {
+        Transparency = 0,
+        Thickness = 1,
+        ZIndex = 53,
+        Parent = huebar
+    })
+
+    local huegrad = utility.create("Gradient", {
+        Rotation = 90,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+            ColorSequenceKeypoint.new(1/6, Color3.fromRGB(255, 255, 0)),
+            ColorSequenceKeypoint.new(2/6, Color3.fromRGB(0, 255, 0)),
+            ColorSequenceKeypoint.new(3/6, Color3.fromRGB(0, 255, 255)),
+            ColorSequenceKeypoint.new(4/6, Color3.fromRGB(0, 0, 255)),
+            ColorSequenceKeypoint.new(5/6, Color3.fromRGB(255, 0, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+        }),
+        Parent = huebar
+    })
+
+    local hue_cursor = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(1, 0, 0, 2),
+        Position = UDim2.new(0, 0, 0, 0),
+        ZIndex = 56,
+        Parent = huebar
+    })
+
+    local alphabar = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 164, 0, 12),
+        Position = UDim2.new(0, 10, 0, 142),
+        ZIndex = 52,
+        Parent = drop
+    })
+
+    local alphabarstroke = utility.create("Stroke", {
+        Transparency = 0,
+        Thickness = 1,
+        ZIndex = 53,
+        Parent = alphabar
+    })
+
+    local alphagrad = utility.create("Gradient", {
+        Rotation = 0,
+        Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 1, 1)),
+        Transparency = NumberSequence.new(0, 1),
+        Parent = alphabar
+    })
+
+    local alpha_cursor = utility.create("Square", {
+        Transparency = 0,
+        Size = UDim2.new(0, 2, 1, 0),
+        Position = UDim2.new(1, -2, 0, 0),
+        ZIndex = 56,
+        Parent = alphabar
+    })
+
+    local function update_visuals()
+        local basecol = hsv_to_rgb(hue, 1, 1)
+        sv.Color = basecol
+        local col = hsv_to_rgb(hue, sat, val)
+        preview.Color = col
+
+        sv_cursor.Position = UDim2.new(sat, -3, 1 - val, -3)
+        hue_cursor.Position = UDim2.new(0, 0, hue, -1)
+        alpha_cursor.Position = UDim2.new(alpha, -1, 0, 0)
+
+        alphagrad.Color = ColorSequence.new(col, col)
+        alphagrad.Transparency = NumberSequence.new(0, 1)
+
+        set_flag(col, alpha)
+    end
+
+    local function set_from_color(col, a)
+        hue, sat, val = rgb_to_hsv(col)
+        alpha = math.clamp(tonumber(a) or 1, 0, 1)
+        update_visuals()
+    end
+
+    local function clamp01(x) return math.clamp(x, 0, 1) end
+
+    local function get_rel_xy(gui, x, y)
+        local abs = gui.AbsolutePosition
+        local sz = gui.AbsoluteSize
+        return clamp01((x - abs.X) / sz.X), clamp01((y - abs.Y) / sz.Y)
+    end
+
+    local dragging_sv = false
+    local dragging_hue = false
+    local dragging_alpha = false
+
+    local UIS = game:GetService("UserInputService")
+
+    local function input_began(input)
+        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+        local pos = UIS:GetMouseLocation()
+
+        if sv.Visible and drop.Visible then
+            local sx, sy = pos.X, pos.Y
+            local abs, size = sv.AbsolutePosition, sv.AbsoluteSize
+            if sx >= abs.X and sx <= abs.X + size.X and sy >= abs.Y and sy <= abs.Y + size.Y then
+                dragging_sv = true
+                local rx, ry = get_rel_xy(sv, sx, sy)
+                sat = rx
+                val = 1 - ry
+                update_visuals()
+                return
+            end
+        end
+
+        do
+            local sx, sy = pos.X, pos.Y
+            local abs, size = huebar.AbsolutePosition, huebar.AbsoluteSize
+            if drop.Visible and sx >= abs.X and sx <= abs.X + size.X and sy >= abs.Y and sy <= abs.Y + size.Y then
+                dragging_hue = true
+                local _, ry = get_rel_xy(huebar, sx, sy)
+                hue = ry
+                update_visuals()
+                return
+            end
+        end
+
+        do
+            local sx, sy = pos.X, pos.Y
+            local abs, size = alphabar.AbsolutePosition, alphabar.AbsoluteSize
+            if drop.Visible and sx >= abs.X and sx <= abs.X + size.X and sy >= abs.Y and sy <= abs.Y + size.Y then
+                dragging_alpha = true
+                local rx = get_rel_xy(alphabar, sx, sy)
+                alpha = rx
+                update_visuals()
+                return
+            end
+        end
+    end
+
+    local function input_changed(input)
+        if input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+        if not drop.Visible then return end
+
+        local pos = UIS:GetMouseLocation()
+        local sx, sy = pos.X, pos.Y
+
+        if dragging_sv then
+            local rx, ry = get_rel_xy(sv, sx, sy)
+            sat = rx
+            val = 1 - ry
+            update_visuals()
+        elseif dragging_hue then
+            local _, ry = get_rel_xy(huebar, sx, sy)
+            hue = ry
+            update_visuals()
+        elseif dragging_alpha then
+            local rx = get_rel_xy(alphabar, sx, sy)
+            alpha = rx
+            update_visuals()
+        end
+    end
+
+    local function input_ended(input)
+        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+        dragging_sv = false
+        dragging_hue = false
+        dragging_alpha = false
+    end
+
+    button.MouseButton1Click:Connect(function()
+        opened = not opened
+        drop.Visible = opened
+    end)
+
+    UIS.InputBegan:Connect(input_began)
+    UIS.InputChanged:Connect(input_changed)
+    UIS.InputEnded:Connect(input_ended)
+
+    local picker = {}
+    picker.flag = flag
+
+    function picker:Set(col, a)
+        set_from_color(col or Color3.new(1, 1, 1), a == nil and alpha or a)
+    end
+
+    function picker:SetColor(col)
+        set_from_color(col or Color3.new(1, 1, 1), alpha)
+    end
+
+    function picker:SetAlpha(a)
+        set_from_color(hsv_to_rgb(hue, sat, val), a)
+    end
+
+    function picker:Get()
+        local v = library.flags[flag]
+        if typeof(v) == "table" then
+            return v.Color, v.Alpha
+        end
+        return hsv_to_rgb(hue, sat, val), alpha
+    end
+
+    library.options[flag] = picker
+    set_from_color(default or Color3.new(1, 1, 1), alpha)
+
+    return picker
+end
 
     local alphaicon = utility.create("Image", {
         Size = UDim2.new(1, 0, 1, 0),
