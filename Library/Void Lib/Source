@@ -2905,7 +2905,6 @@ end
 
     return colorpickertypes, window
 end
-end
 
 local keys = {
     [Enum.KeyCode.LeftShift] = "L-SHIFT",
