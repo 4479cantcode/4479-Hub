@@ -1,16 +1,53 @@
+## Features
+
+- 🎨 Clean and modern design
+- ⚡ Lightweight and optimized
+- 🔧 Easy to use API
+- 📱 Responsive interface
+- 🎯 Multiple UI elements
+- 🎮 Keybind support
+- 🌈 Color picker support
+- 💾 Config system with auto-load
+- 🔔 Notification system
+- 🎨 Customizable backgrounds
+- 💧 Watermark support
+
 ## Supported Elements
+
 - Window  
 - Tab  
+- Section
 - Toggle  
 - Button  
 - Slider  
+- Textbox
 - Dropdown  
+- Keybind
+- Colorpicker
 - Divider  
-- Label  
+- Label
+- Watermark
+- Notification
 
 ## Load Library
 ```lua
-local Bracket = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Bracket/refs/heads/main/BracketV34.lua"))()
+local Bracket = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/AlexR32/Bracket/main/BracketV33.lua"
+))()
+```
+
+## Notifications
+```lua
+Bracket:Notification({
+    Title = "Success",
+    Description = "Script loaded successfully!",
+    Duration = 10
+})
+
+Bracket:Notification2({
+    Title = "Quick Message",
+    Duration = 5
+})
 ```
 
 ## Basic Usage
@@ -20,174 +57,409 @@ local Bracket = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR
 local Window = Bracket:Window({
     Name = "My Script Hub",
     Enabled = true,
-    Color = Color3.fromRGB(255, 255, 255),
-    Size = UDim2.fromOffset(380, 240),
-    Position = UDim2.new(0.5, -240, 0.5, -160)
+    Color = Color3.new(1, 0.5, 0.25),
+    Size = UDim2.new(0, 496, 0, 496),
+    Position = UDim2.new(0.5, -248, 0.5, -248)
 })
+```
+
+### Window Properties
+```lua
+Window.Name = "New Name"
+Window.Size = UDim2.new(0, 496, 0, 496)
+Window.Position = UDim2.new(0.5, -248, 0.5, -248)
+Window.Color = Color3.new(1, 0.5, 0.25)
+Window.Enabled = true
+Window.Blur = true
+```
+
+### Config System
+```lua
+Window:SaveConfig("FolderName", "ConfigName")
+Window:LoadConfig("FolderName", "ConfigName")
+Window:DeleteConfig("FolderName", "ConfigName")
+
+Window:GetAutoLoadConfig("FolderName")
+Window:AddToAutoLoad("FolderName", "ConfigName")
+Window:RemoveFromAutoLoad("FolderName")
+Window:AutoLoadConfig("FolderName")
+
+Window:SetValue("Flag", Value)
+Window:GetValue("Flag")
+```
+
+### Background Customization
+```lua
+Window.Background.ImageTransparency = 0
+Window.Background.ImageColor3 = Color3.new(0, 0, 0)
+Window.Background.Image = "rbxassetid://5553946656"
+```
+
+### Watermark
+```lua
+local Watermark = Window:Watermark({
+    Title = "Bracket V3.3 | My Script",
+    Flag = "UI/Watermark/Position",
+    Enabled = true
+})
+
+Watermark.Enabled = true
+Watermark.Title = "New Text"
+Watermark.Value = {0, 0, 0, 0}
 ```
 
 ### Create Tabs
 ```lua
-local Tabs = {
-    Main = Window:Tab({Name = "Main"}),
-    Settings = Window:Tab({Name = "Settings"}),
-    Credits = Window:Tab({Name = "Credits"})
-}
+local Tab = Window:Tab({Name = "Main"})
 ```
 
-### Add Elements
+## Elements
 
-#### Toggle
+### Divider
 ```lua
-Tabs.Main:Toggle({
+local Divider = Tab:Divider({
+    Text = "Section Name",
+    Side = "Left"
+})
+
+Divider.Text = "New Text"
+```
+
+### Label
+```lua
+local Label = Tab:Label({
+    Text = "Information text",
+    Side = "Left"
+})
+
+Label.Text = "Updated text"
+```
+
+### Button
+```lua
+local Button = Tab:Button({
+    Name = "Click Me",
+    Side = "Left",
+    Callback = function()
+        print("Button clicked!")
+    end
+})
+
+Button.Name = "New Name"
+Button.Callback = function() end
+Button:ToolTip("Hover text")
+```
+
+### Toggle
+```lua
+local Toggle = Tab:Toggle({
     Name = "Enable Feature",
+    Flag = "Toggle",
+    Side = "Left",
     Value = false,
     Callback = function(value)
         print("Toggle state:", value)
     end
 })
+
+Toggle.Name = "New Name"
+Toggle.Value = true
+Toggle.Callback = function(value) end
+Toggle:ToolTip("Hover text")
 ```
 
-#### Button
+### Toggle with Keybind
 ```lua
-Tabs.Main:Button({
-    Name = "Click Me",
-    Callback = function()
-        print("Button clicked!")
+local ToggleKeybind = Toggle:Keybind({
+    Flag = "Toggle/Keybind",
+    Value = "NONE",
+    DoNotClear = false,
+    Mouse = false,
+    Callback = function(key, pressed, toggled)
+        print(key, pressed, toggled)
+    end,
+    Blacklist = {"W", "A", "S", "D", "Slash", "Tab", "Backspace", "Escape", "Space", "Delete", "Unknown", "Backquote"}
+})
+
+ToggleKeybind.Value = "B"
+ToggleKeybind.Callback = function(key, pressed, toggled) end
+```
+
+### Toggle with Colorpicker
+```lua
+local ToggleColorpicker = Toggle:Colorpicker({
+    Flag = "Toggle/Colorpicker",
+    Value = {1, 1, 1, 0, false},
+    Callback = function(hsvar, color3)
+        print(hsvar, color3)
     end
 })
+
+ToggleColorpicker.Value = {1, 1, 1, 0, false}
+ToggleColorpicker.Callback = function(hsvar, color3) end
 ```
 
-#### Slider
+### Slider
 ```lua
-Tabs.Main:Slider({
+local Slider = Tab:Slider({
     Name = "Speed",
+    Flag = "Slider",
+    Side = "Left",
     Min = 0,
     Max = 100,
     Value = 50,
+    Precise = 2,
+    Unit = "",
     Callback = function(value)
         print("Slider value:", value)
     end
 })
+
+Slider.Name = "New Name"
+Slider.Value = 75
+Slider.Callback = function(value) end
+Slider:ToolTip("Hover text")
 ```
 
-#### Dropdown
+### Textbox
 ```lua
-Tabs.Main:Dropdown({
+local Textbox = Tab:Textbox({
+    Name = "Input",
+    Flag = "Textbox",
+    Side = "Left",
+    Value = "Default Text",
+    Placeholder = "Enter text...",
+    NumberOnly = false,
+    Callback = function(text, enterPressed)
+        print(text, enterPressed)
+    end
+})
+
+Textbox.Name = "New Name"
+Textbox.Value = "New Text"
+Textbox.Placeholder = "New Placeholder"
+Textbox.Callback = function(text, enterPressed) end
+Textbox:ToolTip("Hover text")
+```
+
+### Keybind
+```lua
+local Keybind = Tab:Keybind({
+    Name = "Hotkey",
+    Flag = "Keybind",
+    Side = "Left",
+    Value = "NONE",
+    Mouse = false,
+    DoNotClear = false,
+    Callback = function(key, pressed, toggled)
+        print(key, pressed, toggled)
+    end,
+    Blacklist = {"W", "A", "S", "D", "Slash", "Tab", "Backspace", "Escape", "Space", "Delete", "Unknown", "Backquote"}
+})
+
+Keybind.Name = "New Name"
+Keybind.Value = "B"
+Keybind.Callback = function(key, pressed, toggled) end
+Keybind:ToolTip("Hover text")
+```
+
+### Dropdown
+```lua
+local Dropdown = Tab:Dropdown({
     Name = "Select Option",
-    Default = {"Option 1"},
+    Flag = "Dropdown",
+    Side = "Left",
     List = {
         {
-            Name = "Option 1",
-            Mode = "Button",
-            Callback = function()
-                print("Option 1 selected")
+            Name = "Head",
+            Mode = "Toggle",
+            Value = false,
+            Callback = function(selected)
+                print("Head selected:", selected)
             end
         },
         {
-            Name = "Option 2",
+            Name = "HumanoidRootPart",
             Mode = "Button",
-            Callback = function()
-                print("Option 2 selected")
+            Value = false,
+            Callback = function(selected)
+                print("HumanoidRootPart selected:", selected)
             end
         }
     }
 })
+
+Dropdown.Name = "New Name"
+Dropdown.Value = {"Head"}
+Dropdown:BulkAdd(listTable)
+Dropdown:AddOption(optionTable)
+Dropdown:RemoveOption("OptionName")
+Dropdown:Clear()
+Dropdown:ToolTip("Hover text")
 ```
 
-#### Divider
+### Colorpicker
 ```lua
-Tabs.Main:Divider({Text = "Section Name"})
-```
-
-#### Label
-```lua
-Tabs.Main:Label({Text = "This is a label"})
-```
-
-#### Keybind
-```lua
-Tabs.Settings:Keybind({
-    Name = "Toggle UI",
-    Key = "RightShift",
-    Callback = function(key)
-        Bracket:Toggle()
+local Colorpicker = Tab:Colorpicker({
+    Name = "Color",
+    Flag = "Colorpicker",
+    Side = "Left",
+    Value = {1, 1, 1, 0, false},
+    Callback = function(hsvar, color3)
+        print(hsvar, color3)
     end
 })
+
+Colorpicker.Name = "New Name"
+Colorpicker.Value = {1, 1, 1, 0, false}
+Colorpicker.Callback = function(hsvar, color3) end
+Colorpicker:ToolTip("Hover text")
 ```
 
-#### Colorpicker
+### Section
 ```lua
-Tabs.Settings:Colorpicker({
-    Name = "UI Color",
-    Color = Color3.fromRGB(255, 255, 255),
-    Callback = function(color)
-        print("Color changed:", color)
-    end
+local Section = Tab:Section({
+    Name = "Section Name",
+    Side = "Right"
 })
+
+Section.Name = "New Name"
+
+Section:Divider()
+Section:Label()
+Section:Button()
+
+local Toggle = Section:Toggle()
+Toggle:Keybind()
+Toggle:Colorpicker()
+
+Section:Slider()
+Section:Textbox()
+Section:Keybind()
+Section:Dropdown()
+Section:Colorpicker()
 ```
 
-## Example
+### Config Section
 ```lua
-local Bracket = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Bracket/refs/heads/main/BracketV34.lua"))()
+Tab:AddConfigSection("FolderName", "Left")
+```
+
+## Complete Example
+```lua
+local Bracket = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/AlexR32/Bracket/main/BracketV33.lua"
+))()
+
+Bracket:Notification({
+    Title = "Loading",
+    Description = "Script is loading...",
+    Duration = 5
+})
 
 local Window = Bracket:Window({
     Name = "Example Hub",
     Enabled = true,
-    Color = Color3.fromRGB(255, 255, 255),
-    Size = UDim2.fromOffset(380, 240),
-    Position = UDim2.new(0.5, -240, 0.5, -160)
+    Color = Color3.new(1, 0.5, 0.25),
+    Size = UDim2.new(0, 496, 0, 496),
+    Position = UDim2.new(0.5, -248, 0.5, -248)
 })
 
-local Tabs = {
-    Main = Window:Tab({Name = "Main"}),
-    Settings = Window:Tab({Name = "Settings"})
-}
+local Watermark = Window:Watermark({
+    Title = "Example Hub | v1.0",
+    Flag = "UI/Watermark/Position",
+    Enabled = true
+})
 
-Tabs.Main:Divider({Text = "Features"})
+local MainTab = Window:Tab({Name = "Main"})
 
-Tabs.Main:Toggle({
-    Name = "Farm",
+MainTab:Divider({Text = "Features", Side = "Left"})
+
+MainTab:Toggle({
+    Name = "Auto Farm",
+    Flag = "AutoFarm",
+    Side = "Left",
     Value = false,
     Callback = function(value)
-        print("Farm:", value)
+        print("Auto Farm:", value)
     end
 })
 
-Tabs.Main:Slider({
+MainTab:Slider({
     Name = "Farm Speed",
+    Flag = "FarmSpeed",
+    Side = "Left",
     Min = 1,
     Max = 10,
     Value = 5,
+    Precise = 1,
+    Unit = "x",
     Callback = function(value)
         print("Speed:", value)
     end
 })
+
+MainTab:Dropdown({
+    Name = "Target Part",
+    Flag = "TargetPart",
+    Side = "Left",
+    List = {
+        {
+            Name = "Head",
+            Mode = "Button",
+            Callback = function()
+                print("Head selected")
+            end
+        },
+        {
+            Name = "Torso",
+            Mode = "Button",
+            Callback = function()
+                print("Torso selected")
+            end
+        }
+    }
+})
+
+local SettingsTab = Window:Tab({Name = "Settings"})
+
+SettingsTab:AddConfigSection("MyScript", "Left")
+
+local Section = SettingsTab:Section({Name = "UI Settings", Side = "Right"})
+
+local UIToggle = Section:Toggle({
+    Name = "UI Enabled",
+    Flag = "UI/Enabled",
+    Value = true,
+    Callback = function(value)
+        Window.Enabled = value
+    end
+})
+
+UIToggle:Keybind({
+    Flag = "UI/Keybind",
+    Value = "RightShift",
+    DoNotClear = true
+})
+
+UIToggle:Colorpicker({
+    Flag = "UI/Color",
+    Value = {1, 0.25, 1, 0, true},
+    Callback = function(hsvar, color)
+        Window.Color = color
+    end
+})
+
+Window:AutoLoadConfig("MyScript")
 ```
-### Window Methods
-- `Window:Tab({Name = "TabName"})` - Create a new tab
-- `Window:Toggle()` - Toggle window visibility
-- `Bracket:Toggle()` - Toggle the entire UI
 
-### Tab Methods
-- `Tab:Toggle({})` - Add a toggle element
-- `Tab:Button({})` - Add a button element
-- `Tab:Slider({})` - Add a slider element
-- `Tab:Dropdown({})` - Add a dropdown element
-- `Tab:Divider({})` - Add a divider
-- `Tab:Label({})` - Add a label
-- `Tab:Keybind({})` - Add a keybind
-- `Tab:Colorpicker({})` - Add a color picker
+## Notes
 
-## Tips
-
-1. Always store tabs in a table for easy access
-2. Use dividers to organize your UI sections
-3. Keep toggle/slider names descriptive
-4. Test your UI before publishing
-5. Use pcall() for error handling in callbacks
-
-# Credits
-
-Created by AlexR32
-Edited by 4479
+- **Side Parameter**: Can be "Left", "Right" or nil (auto-choose)
+- **Flag System**: Used for saving/loading configs
+- **HSVAR Format**: {Hue, Saturation, Value, Alpha, Rainbow}
+- **Keybind Blacklist**: Prevents certain keys from being bound
+- **DoNotClear**: Keybind won't be cleared when clicking "Clear" button
+- **IgnoreFlag**: Element won't be saved in configs
+- **HideName**: Hides the element's name label
+- **Wide**: Makes sliders take full width
