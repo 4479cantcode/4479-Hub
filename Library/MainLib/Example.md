@@ -163,9 +163,7 @@ Tabs.Main:Slider({
         print("Speed:", value)
     end
 })
-
-## Methods
-
+```
 ### Window Methods
 - `Window:Tab({Name = "TabName"})` - Create a new tab
 - `Window:Toggle()` - Toggle window visibility
