@@ -684,7 +684,7 @@ Window = function()
 	CloseButton.Position = UDim2.new(1, -6, 0.5, 0)
 	CloseButton.BackgroundTransparency = 1
 	CloseButton.BorderSizePixel = 0
-	CloseButton.Text = "X"
+	CloseButton.Text = "[Minimize]"
 	CloseButton.TextSize = 14
 	CloseButton.TextStrokeTransparency = 0.75
 	CloseButton.TextColor3 = Color3.fromRGB(191, 191, 191)
@@ -704,7 +704,7 @@ Window = function()
 			FloatingButton.Name = "FloatingRestore"
 			FloatingButton.Size = UDim2.new(0, 46, 0, 46)
 			FloatingButton.Position = UDim2.new(0, 10, 0.5, -23)
-			FloatingButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+			FloatingButton.BackgroundColor3 = Color3.fromRGB(255, 220, 0)
 			FloatingButton.BorderSizePixel = 0
 			FloatingButton.Image = ""
 			FloatingButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
@@ -716,53 +716,9 @@ Window = function()
 			Corner.Parent = FloatingButton
 
 			local FloatingStroke = Instance.new("UIStroke")
-			FloatingStroke.Color = Color3.fromRGB(63, 63, 63)
+			FloatingStroke.Color = Color3.fromRGB(150, 0, 255)
+			FloatingStroke.Thickness = 3
 			FloatingStroke.Parent = FloatingButton
-
-			local ExplosionEmitter = Instance.new("ParticleEmitter")
-			ExplosionEmitter.Name = "Explosion"
-			ExplosionEmitter.Texture = "rbxasset://textures/particles/fire_main.dds"
-			ExplosionEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 170, 0), Color3.fromRGB(255, 50, 0))
-			ExplosionEmitter.Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 15),
-				NumberSequenceKeypoint.new(1, 0)
-			})
-			ExplosionEmitter.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(1, 1)
-			})
-			ExplosionEmitter.Lifetime = NumberRange.new(0.5, 0.8)
-			ExplosionEmitter.Rate = 0
-			ExplosionEmitter.Speed = NumberRange.new(50, 80)
-			ExplosionEmitter.SpreadAngle = Vector2.new(180, 180)
-			ExplosionEmitter.Rotation = NumberRange.new(0, 360)
-			ExplosionEmitter.RotSpeed = NumberRange.new(-200, 200)
-			ExplosionEmitter.LightEmission = 1
-			ExplosionEmitter.Parent = FloatingButton
-
-			local IdleEmitter = Instance.new("ParticleEmitter")
-			IdleEmitter.Name = "IdleFlames"
-			IdleEmitter.Texture = "rbxasset://textures/particles/fire_main.dds"
-			IdleEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 200, 50), Color3.fromRGB(255, 100, 0))
-			IdleEmitter.Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 5),
-				NumberSequenceKeypoint.new(1, 0)
-			})
-			IdleEmitter.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.5),
-				NumberSequenceKeypoint.new(1, 1)
-			})
-			IdleEmitter.Lifetime = NumberRange.new(0.3, 0.6)
-			IdleEmitter.Rate = 15
-			IdleEmitter.Speed = NumberRange.new(10, 20)
-			IdleEmitter.SpreadAngle = Vector2.new(30, 30)
-			IdleEmitter.Rotation = NumberRange.new(0, 360)
-			IdleEmitter.RotSpeed = NumberRange.new(-100, 100)
-			IdleEmitter.LightEmission = 0.8
-			IdleEmitter.Enabled = true
-			IdleEmitter.Parent = FloatingButton
-
-			ExplosionEmitter:Emit(30)
 
 			local dragging = false
 			local dragStart
@@ -818,21 +774,16 @@ Window = function()
 		end)
 	end)
 
-	local Background = Instance.new("ImageLabel")
+	local Background = Instance.new("Frame")
 	Background.Name = "Background"
 	Background.ZIndex = 2
 	Background.AnchorPoint = Vector2.new(0.5, 0)
 	Background.Size = UDim2.new(1, 0, 1, -19)
 	Background.ClipsDescendants = true
 	Background.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Background.BackgroundTransparency = 1
 	Background.Position = UDim2.new(0.5, 0, 0, 19)
 	Background.BorderSizePixel = 0
-	Background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	Background.ScaleType = Enum.ScaleType.Tile
-	Background.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	Background.TileSize = UDim2.new(0, 74, 0, 74)
-	Background.Image = "rbxassetid://5553946656"
+	Background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 	Background.Parent = Window
 		
 		local Resize = Instance.new("ImageButton")
