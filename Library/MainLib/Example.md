@@ -1,19 +1,4 @@
-## Features
-
-- 🎨 Clean and modern design
-- ⚡ Lightweight and optimized
-- 🔧 Easy to use API
-- 📱 Responsive interface
-- 🎯 Multiple UI elements
-- 🎮 Keybind support
-- 🌈 Color picker support
-- 💾 Config system with auto-load
-- 🔔 Notification system
-- 🎨 Customizable backgrounds
-- 💧 Watermark support
-
 ## Supported Elements
-
 - Window  
 - Tab  
 - Section
