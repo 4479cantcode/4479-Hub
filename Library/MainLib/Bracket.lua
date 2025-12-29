@@ -673,25 +673,99 @@ Bracket.Assets = {
 		Title.TextXAlignment = Enum.TextXAlignment.Left
 		Title.Parent = Topbar
 
-		local Label = Instance.new("TextLabel")
-		Label.Name = "Label"
-		Label.AnchorPoint = Vector2.new(1, 0.5)
-		Label.Size = UDim2.new(0, 62, 1, 0)
-		Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		Label.BackgroundTransparency = 1
-		Label.Position = UDim2.new(1, -4, 0.5, 0)
-		Label.BorderSizePixel = 0
-		Label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-		Label.TextStrokeTransparency = 0.75
-		Label.TextSize = 14
-		Label.RichText = true
-		Label.TextColor3 = Color3.fromRGB(191, 191, 191)
-		-- Label.TextYAlignment = Enum.TextYAlignment.Top
-		Label.Text = "Bracket V3.4"
-		Label.FontFace = Font.fromEnum(Enum.Font.SourceSansSemibold)
-		Label.TextXAlignment = Enum.TextXAlignment.Right
-		Label.Parent = Topbar
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "Close"
+CloseButton.AnchorPoint = Vector2.new(1, 0.5)
+CloseButton.Size = UDim2.new(0, 24, 0, 18)
+CloseButton.Position = UDim2.new(1, -6, 0.5, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextSize = 14
+CloseButton.TextStrokeTransparency = 0.75
+CloseButton.TextColor3 = Color3.fromRGB(191, 191, 191)
+CloseButton.FontFace = Font.fromEnum(Enum.Font.SourceSansSemibold)
+CloseButton.Parent = Topbar
+
+local ScreenGui = Window:FindFirstAncestorOfClass("ScreenGui")
+
+local FloatingButton = Instance.new("ImageButton")
+FloatingButton.Name = "FloatingRestore"
+FloatingButton.Size = UDim2.new(0, 44, 0, 44)
+FloatingButton.Position = UDim2.new(0, 12, 0.5, -22)
+FloatingButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+FloatingButton.BorderSizePixel = 0
+FloatingButton.Image = "rbxassetid://YOUR_ICON_ID_HERE"
+FloatingButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+FloatingButton.Visible = false
+FloatingButton.ZIndex = 100
+FloatingButton.Parent = ScreenGui
+
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(1, 0)
+Corner.Parent = FloatingButton
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(63, 63, 63)
+Stroke.Parent = FloatingButton
+
+local HiddenPosition = UDim2.new(0.5, -248, 1.25, 0)
+local VisiblePosition = Window.Position
+
+CloseButton.MouseButton1Click:Connect(function()
+	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+		Position = HiddenPosition
+	}):Play()
+	task.delay(0.35, function()
+		Window.Visible = false
+		FloatingButton.Visible = true
+		TweenService:Create(FloatingButton, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, 44, 0, 44)
+		}):Play()
+	end)
+end)
+
+FloatingButton.MouseButton1Click:Connect(function()
+	FloatingButton.Visible = false
+	Window.Visible = true
+	Window.Position = HiddenPosition
+	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Position = VisiblePosition
+	}):Play()
+end)
+
+local dragging = false
+local dragStart
+local startPos
+
+FloatingButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = FloatingButton.Position
+	end
+end)
+
+FloatingButton.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		FloatingButton.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
 		local Background = Instance.new("ImageLabel")
 		Background.Name = "Background"
 		Background.ZIndex = 2
