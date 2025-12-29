@@ -690,25 +690,83 @@ CloseButton.TextColor3 = Color3.fromRGB(191, 191, 191)
 CloseButton.FontFace = Font.fromEnum(Enum.Font.SourceSansSemibold)
 CloseButton.Parent = Topbar
 
-local Root
-task.spawn(function()
-	repeat task.wait() until Window.Parent
-	Root = Window.Parent
-	FloatingButton.Parent = Root
-end)
+local FloatingButton
+local HiddenPosition = UDim2.new(0.5, -248, 1.3, 0)
+local VisiblePosition = Window.Position
 
-local FloatingButton = Instance.new("ImageButton")
-FloatingButton.Name = "FloatingRestore"
-FloatingButton.Size = UDim2.new(0, 46, 0, 46)
-FloatingButton.Position = UDim2.new(0, 20, 0, 200)
-FloatingButton.AnchorPoint = Vector2.new(0, 0)
-FloatingButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-FloatingButton.BorderSizePixel = 0
-FloatingButton.Image = "rbxassetid://10590477450"
-FloatingButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
-FloatingButton.Visible = false
-FloatingButton.ZIndex = 9999
-FloatingButton.Parent = Root
+CloseButton.MouseButton1Click:Connect(function()
+	if not FloatingButton then
+		local Root = Window.Parent
+		if not Root then return end
+
+		FloatingButton = Instance.new("ImageButton")
+		FloatingButton.Name = "FloatingRestore"
+		FloatingButton.Size = UDim2.new(0, 46, 0, 46)
+		FloatingButton.Position = UDim2.new(0, 20, 0, 200)
+		FloatingButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+		FloatingButton.BorderSizePixel = 0
+		FloatingButton.Image = "rbxassetid://10590477450"
+		FloatingButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+		FloatingButton.ZIndex = 9999
+		FloatingButton.Parent = Root
+
+		local Corner = Instance.new("UICorner")
+		Corner.CornerRadius = UDim.new(1, 0)
+		Corner.Parent = FloatingButton
+
+		local Stroke = Instance.new("UIStroke")
+		Stroke.Color = Color3.fromRGB(63, 63, 63)
+		Stroke.Parent = FloatingButton
+
+		local dragging = false
+		local dragStart
+		local startPos
+
+		FloatingButton.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = true
+				dragStart = input.Position
+				startPos = FloatingButton.Position
+			end
+		end)
+
+		FloatingButton.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = false
+			end
+		end)
+
+		UserInputService.InputChanged:Connect(function(input)
+			if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+				local delta = input.Position - dragStart
+				FloatingButton.Position = UDim2.new(
+					startPos.X.Scale,
+					startPos.X.Offset + delta.X,
+					startPos.Y.Scale,
+					startPos.Y.Offset + delta.Y
+				)
+			end
+		end)
+
+		FloatingButton.MouseButton1Click:Connect(function()
+			FloatingButton.Visible = false
+			Window.Visible = true
+			Window.Position = HiddenPosition
+			TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Position = VisiblePosition
+			}):Play()
+		end)
+	end
+
+	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+		Position = HiddenPosition
+	}):Play()
+
+	task.delay(0.35, function()
+		Window.Visible = false
+		FloatingButton.Visible = true
+	end)
+end)
 
 local Corner = Instance.new("UICorner")
 Corner.CornerRadius = UDim.new(1, 0)
@@ -4561,7 +4619,7 @@ if Bracket.IsLocal then
 		print("Setting property", object, prop, value)
 	end
 end
-print("DEBUG 1")
+print("DEBUG 3")
 -- // Initialize ScreenGui
 Bracket.Screen = Bracket.Elements.Screen()
 
