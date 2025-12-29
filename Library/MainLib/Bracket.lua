@@ -488,7 +488,7 @@ Bracket.Assets = {
 		Background.ScaleType = Enum.ScaleType.Tile
 		Background.ImageColor3 = Color3.fromRGB(0, 0, 0)
 		Background.TileSize = UDim2.new(0, 74, 0, 74)
-		Background.Image = "rbxassetid://5553946656"
+		Background.Image = "rbxassetid://3926307971"
 		Background.Parent = KeybindList
 
 		local Resize = Instance.new("ImageButton")
