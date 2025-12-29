@@ -4560,7 +4560,7 @@ if Bracket.IsLocal then
 		print("Setting property", object, prop, value)
 	end
 end
-print("DEBUG 1")
+print("DEBUG 2")
 -- // Initialize ScreenGui
 Bracket.Screen = Bracket.Elements.Screen()
 
