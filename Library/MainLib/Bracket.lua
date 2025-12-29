@@ -4561,7 +4561,6 @@ if Bracket.IsLocal then
 		print("Setting property", object, prop, value)
 	end
 end
-print("Library Loaded")
 -- // Initialize ScreenGui
 Bracket.Screen = Bracket.Elements.Screen()
 
