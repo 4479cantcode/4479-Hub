@@ -627,6 +627,7 @@ Bracket.Assets = {
 		return KeybindMimic
 	end,
 
+
 Window = function()
 	local Window = Instance.new("Frame")
 	Window.Name = "Window"
@@ -702,7 +703,7 @@ Window = function()
 			FloatingButton = Instance.new("ImageButton")
 			FloatingButton.Name = "FloatingRestore"
 			FloatingButton.Size = UDim2.new(0, 46, 0, 46)
-			FloatingButton.Position = UDim2.new(0, 20, 0, 200)
+			FloatingButton.Position = UDim2.new(0, 10, 0.5, -23)
 			FloatingButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
 			FloatingButton.BorderSizePixel = 0
 			FloatingButton.Image = "rbxassetid://10590477450"
@@ -721,10 +722,12 @@ Window = function()
 			local dragging = false
 			local dragStart
 			local startPos
+			local hasMoved = false
 
 			FloatingButton.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					dragging = true
+					hasMoved = false
 					dragStart = input.Position
 					startPos = FloatingButton.Position
 				end
@@ -733,12 +736,23 @@ Window = function()
 			FloatingButton.InputEnded:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					dragging = false
+					if not hasMoved then
+						FloatingButton.Visible = false
+						Window.Visible = true
+						Window.Position = HiddenPosition
+						TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Position = VisiblePosition
+						}):Play()
+					end
 				end
 			end)
 
 			UserInputService.InputChanged:Connect(function(input)
 				if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 					local delta = input.Position - dragStart
+					if delta.Magnitude > 5 then
+						hasMoved = true
+					end
 					FloatingButton.Position = UDim2.new(
 						startPos.X.Scale,
 						startPos.X.Offset + delta.X,
@@ -746,15 +760,6 @@ Window = function()
 						startPos.Y.Offset + delta.Y
 					)
 				end
-			end)
-
-			FloatingButton.MouseButton1Click:Connect(function()
-				FloatingButton.Visible = false
-				Window.Visible = true
-				Window.Position = HiddenPosition
-				TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-					Position = VisiblePosition
-				}):Play()
 			end)
 		end
 
@@ -784,7 +789,7 @@ Window = function()
 	Background.TileSize = UDim2.new(0, 74, 0, 74)
 	Background.Image = "rbxassetid://5553946656"
 	Background.Parent = Window
-
+		
 		local Resize = Instance.new("ImageButton")
 		Resize.Name = "Resize"
 		Resize.ZIndex = 5
@@ -4560,7 +4565,7 @@ if Bracket.IsLocal then
 		print("Setting property", object, prop, value)
 	end
 end
-print("DEBUG 2")
+print("DEBUG 3")
 -- // Initialize ScreenGui
 Bracket.Screen = Bracket.Elements.Screen()
 
