@@ -690,7 +690,7 @@ CloseButton.TextColor3 = Color3.fromRGB(191, 191, 191)
 CloseButton.FontFace = Font.fromEnum(Enum.Font.SourceSansSemibold)
 CloseButton.Parent = Topbar
 
-local ScreenGui = Window:FindFirstAncestorOfClass("ScreenGui")
+local ScreenGui = Window.Parent
 
 local FloatingButton = Instance.new("ImageButton")
 FloatingButton.Name = "FloatingRestore"
@@ -701,7 +701,7 @@ FloatingButton.BorderSizePixel = 0
 FloatingButton.Image = "rbxassetid://YOUR_ICON_ID_HERE"
 FloatingButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
 FloatingButton.Visible = false
-FloatingButton.ZIndex = 100
+FloatingButton.ZIndex = 999
 FloatingButton.Parent = ScreenGui
 
 local Corner = Instance.new("UICorner")
@@ -719,12 +719,10 @@ CloseButton.MouseButton1Click:Connect(function()
 	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
 		Position = HiddenPosition
 	}):Play()
+
 	task.delay(0.35, function()
 		Window.Visible = false
 		FloatingButton.Visible = true
-		TweenService:Create(FloatingButton, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-			Size = UDim2.new(0, 44, 0, 44)
-		}):Play()
 	end)
 end)
 
@@ -732,6 +730,7 @@ FloatingButton.MouseButton1Click:Connect(function()
 	FloatingButton.Visible = false
 	Window.Visible = true
 	Window.Position = HiddenPosition
+
 	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Position = VisiblePosition
 	}):Play()
