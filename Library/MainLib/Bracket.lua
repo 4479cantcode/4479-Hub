@@ -690,19 +690,20 @@ CloseButton.TextColor3 = Color3.fromRGB(191, 191, 191)
 CloseButton.FontFace = Font.fromEnum(Enum.Font.SourceSansSemibold)
 CloseButton.Parent = Topbar
 
-local ScreenGui = Window.Parent
+local Root = Window.Parent
 
 local FloatingButton = Instance.new("ImageButton")
 FloatingButton.Name = "FloatingRestore"
-FloatingButton.Size = UDim2.new(0, 44, 0, 44)
-FloatingButton.Position = UDim2.new(0, 12, 0.5, -22)
+FloatingButton.Size = UDim2.new(0, 46, 0, 46)
+FloatingButton.Position = UDim2.new(0, 20, 0, 200)
+FloatingButton.AnchorPoint = Vector2.new(0, 0)
 FloatingButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
 FloatingButton.BorderSizePixel = 0
-FloatingButton.Image = "rbxassetid://YOUR_ICON_ID_HERE"
+FloatingButton.Image = "rbxassetid://10590477450"
 FloatingButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
 FloatingButton.Visible = false
-FloatingButton.ZIndex = 999
-FloatingButton.Parent = ScreenGui
+FloatingButton.ZIndex = 9999
+FloatingButton.Parent = Root
 
 local Corner = Instance.new("UICorner")
 Corner.CornerRadius = UDim.new(1, 0)
@@ -712,14 +713,13 @@ local Stroke = Instance.new("UIStroke")
 Stroke.Color = Color3.fromRGB(63, 63, 63)
 Stroke.Parent = FloatingButton
 
-local HiddenPosition = UDim2.new(0.5, -248, 1.25, 0)
+local HiddenPosition = UDim2.new(0.5, -248, 1.3, 0)
 local VisiblePosition = Window.Position
 
 CloseButton.MouseButton1Click:Connect(function()
 	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
 		Position = HiddenPosition
 	}):Play()
-
 	task.delay(0.35, function()
 		Window.Visible = false
 		FloatingButton.Visible = true
@@ -730,7 +730,6 @@ FloatingButton.MouseButton1Click:Connect(function()
 	FloatingButton.Visible = false
 	Window.Visible = true
 	Window.Position = HiddenPosition
-
 	TweenService:Create(Window, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Position = VisiblePosition
 	}):Play()
@@ -765,7 +764,6 @@ UserInputService.InputChanged:Connect(function(input)
 		)
 	end
 end)
-
 		local Background = Instance.new("ImageLabel")
 		Background.Name = "Background"
 		Background.ZIndex = 2
@@ -4558,7 +4556,7 @@ if Bracket.IsLocal then
 		print("Setting property", object, prop, value)
 	end
 end
-print("DEBUG 1")
+print("DEBUG 2")
 -- // Initialize ScreenGui
 Bracket.Screen = Bracket.Elements.Screen()
 
