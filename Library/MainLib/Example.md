@@ -164,3 +164,32 @@ Tabs.Main:Slider({
     end
 })
 
+## Methods
+
+### Window Methods
+- `Window:Tab({Name = "TabName"})` - Create a new tab
+- `Window:Toggle()` - Toggle window visibility
+- `Bracket:Toggle()` - Toggle the entire UI
+
+### Tab Methods
+- `Tab:Toggle({})` - Add a toggle element
+- `Tab:Button({})` - Add a button element
+- `Tab:Slider({})` - Add a slider element
+- `Tab:Dropdown({})` - Add a dropdown element
+- `Tab:Divider({})` - Add a divider
+- `Tab:Label({})` - Add a label
+- `Tab:Keybind({})` - Add a keybind
+- `Tab:Colorpicker({})` - Add a color picker
+
+## Tips
+
+1. Always store tabs in a table for easy access
+2. Use dividers to organize your UI sections
+3. Keep toggle/slider names descriptive
+4. Test your UI before publishing
+5. Use pcall() for error handling in callbacks
+
+# Credits
+
+Created by AlexR32
+Edited by 4479
