@@ -330,9 +330,7 @@ Tab:AddConfigSection("FolderName", "Left")
 
 ## Complete Example
 ```lua
-local Bracket = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/AlexR32/Bracket/main/BracketV33.lua"
-))()
+local Bracket = loadstring(game:HttpGet("https://raw.githubusercontent.com/4479cantcode/4479-Hub/refs/heads/main/Library/MainLib/Bracket.lua"))()
 
 Bracket:Notification({
     Title = "Loading",
