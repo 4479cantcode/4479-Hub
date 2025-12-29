@@ -690,7 +690,12 @@ CloseButton.TextColor3 = Color3.fromRGB(191, 191, 191)
 CloseButton.FontFace = Font.fromEnum(Enum.Font.SourceSansSemibold)
 CloseButton.Parent = Topbar
 
-local Root = Window.Parent
+local Root
+task.spawn(function()
+	repeat task.wait() until Window.Parent
+	Root = Window.Parent
+	FloatingButton.Parent = Root
+end)
 
 local FloatingButton = Instance.new("ImageButton")
 FloatingButton.Name = "FloatingRestore"
