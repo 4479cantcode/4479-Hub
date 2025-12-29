@@ -768,6 +768,7 @@ CloseButton.MouseButton1Click:Connect(function()
 	end)
 end)
 
+
 local Corner = Instance.new("UICorner")
 Corner.CornerRadius = UDim.new(1, 0)
 Corner.Parent = FloatingButton
@@ -4619,7 +4620,7 @@ if Bracket.IsLocal then
 		print("Setting property", object, prop, value)
 	end
 end
-print("DEBUG 3")
+print("DEBUG 1")
 -- // Initialize ScreenGui
 Bracket.Screen = Bracket.Elements.Screen()
 
