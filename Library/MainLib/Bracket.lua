@@ -765,6 +765,7 @@ UserInputService.InputChanged:Connect(function(input)
 		)
 	end
 end)
+
 		local Background = Instance.new("ImageLabel")
 		Background.Name = "Background"
 		Background.ZIndex = 2
