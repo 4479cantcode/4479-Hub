@@ -335,10 +335,13 @@ Tab:AddConfigSection("FolderName", "Left")
 ```lua
 local Bracket = loadstring(game:HttpGet("https://raw.githubusercontent.com/4479cantcode/4479-Hub/refs/heads/main/Library/MainLib/Bracket.lua"))()
 
-Bracket:Notification({
-    Title = "Loading",
-    Description = "Script is loading...",
-    Duration = 5
+Bracket:Push({
+    Title = "Success",
+    Description = "Script loaded successfully!",
+    Duration = 10,
+    Callback = function()
+        print("Notification closed")
+    end
 })
 
 local Window = Bracket:Window({
