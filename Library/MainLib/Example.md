@@ -21,15 +21,18 @@ local Bracket = loadstring(game:HttpGet("https://raw.githubusercontent.com/4479c
 
 ## Notifications
 ```lua
-Bracket:Notification({
+Bracket:Push({
     Title = "Success",
     Description = "Script loaded successfully!",
-    Duration = 10
+    Duration = 10,
+    Callback = function()
+        print("Notification closed")
+    end
 })
 
-Bracket:Notification2({
-    Title = "Quick Message",
-    Duration = 5
+Bracket:Push({
+    Title = "Auto Farm",
+    Description = "Successfully started auto farming"
 })
 ```
 
