@@ -59,21 +59,6 @@ Window.Enabled = true
 Window.Blur = true
 ```
 
-### Config System
-```lua
-Window:SaveConfig("FolderName", "ConfigName")
-Window:LoadConfig("FolderName", "ConfigName")
-Window:DeleteConfig("FolderName", "ConfigName")
-
-Window:GetAutoLoadConfig("FolderName")
-Window:AddToAutoLoad("FolderName", "ConfigName")
-Window:RemoveFromAutoLoad("FolderName")
-Window:AutoLoadConfig("FolderName")
-
-Window:SetValue("Flag", Value)
-Window:GetValue("Flag")
-```
-
 ### Background Customization
 ```lua
 Window.Background.ImageTransparency = 0
