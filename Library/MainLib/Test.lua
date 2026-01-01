@@ -259,42 +259,49 @@ Bracket.Utilities = {
 			end
 		end
 	end,
-	GetConfigs = function(FolderName)
-		if not isfolder(FolderName) then makefolder(FolderName) end
-		if not isfolder(FolderName .. "\\Configs") then makefolder(FolderName .. "\\Configs") end
+GetConfigs = function(FolderName)
+	if not isfolder(FolderName) then makefolder(FolderName) end
+	local ConfigFolder = FolderName .. "/Configs"
+	if not isfolder(ConfigFolder) then makefolder(ConfigFolder) end
 
-		local Configs = {}
-		for Index, Config in pairs(listfiles(FolderName .. "\\Configs") or {}) do
-			Config = Config:gsub(FolderName .. "\\Configs\\", "")
-			Config = Config:gsub(".json", "")
+	local Configs = {}
+	for Index, Config in pairs(listfiles(ConfigFolder) or {}) do
+		Config = Config:gsub(ConfigFolder .. "/", "")
+		Config = Config:gsub(".json", "")
 
-			Configs[#Configs + 1] = Config
-		end
+		Configs[#Configs + 1] = Config
+	end
+
+	return Configs
+end
 
 		return Configs
 	end,
-	ConfigsToList = function(FolderName)
-		if not isfolder(FolderName) then makefolder(FolderName) end
-		if not isfolder(FolderName .. "\\Configs") then makefolder(FolderName .. "\\Configs") end
-		if not isfile(FolderName .. "\\AutoLoads.json") then writefile(FolderName .. "\\AutoLoads.json", "[]") end
+ConfigsToList = function(FolderName)
+	if not isfolder(FolderName) then makefolder(FolderName) end
+	local ConfigFolder = FolderName .. "/Configs"
+	if not isfolder(ConfigFolder) then makefolder(ConfigFolder) end
+	
+	local AutoLoadFile = FolderName .. "/AutoLoads.json"
+	if not isfile(AutoLoadFile) then writefile(AutoLoadFile, "[]") end
 
-		local AutoLoads = HttpService:JSONDecode(readfile(FolderName .. "\\AutoLoads.json"))
-		local AutoLoad = AutoLoads[tostring(game.GameId)]
+	local AutoLoads = HttpService:JSONDecode(readfile(AutoLoadFile))
+	local AutoLoad = AutoLoads[tostring(game.GameId)]
 
-		local Configs = {}
-		for Index, Config in pairs(listfiles(FolderName .. "\\Configs") or {}) do
-			Config = Config:gsub(FolderName .. "\\Configs\\", "")
-			Config = Config:gsub(".json", "")
+	local Configs = {}
+	for Index, Config in pairs(listfiles(ConfigFolder) or {}) do
+		Config = Config:gsub(ConfigFolder .. "/", "")
+		Config = Config:gsub(".json", "")
 
-			Configs[#Configs + 1] = {
-				Name = Config,
-				Mode = "Button",
-				Value = Config == AutoLoad
-			}
-		end
-
-		return Configs
+		Configs[#Configs + 1] = {
+			Name = Config,
+			Mode = "Button",
+			Value = Config == AutoLoad
+		}
 	end
+
+	return Configs
+end
 }
 Bracket.Assets = {
 	Screen = function(Self)
