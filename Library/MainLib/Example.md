@@ -385,6 +385,58 @@ ConfigSection:Button({
 
 ## Configs Example
 ```lua
+local ConfigSection = Tab:Section({
+    Title = "Configuration",
+    Side = "Left"
+})
+
+local ConfigName = ConfigSection:Textbox({
+    Title = "Config Name",
+    Default = "",
+    Placeholder = "Enter config name..."
+})
+
+ConfigSection:Button({
+    Title = "Save Config",
+    Callback = function()
+        if ConfigName.Value == "" then return end
+        
+        local ConfigData = {}
+        for Flag, Element in pairs(Bracket.Flags) do
+            ConfigData[Flag] = Element.Value
+        end
+        
+        local FolderName = "4479Hub"
+        if not isfolder(FolderName) then makefolder(FolderName) end
+        if not isfolder(FolderName .. "/Configs") then makefolder(FolderName .. "/Configs") end
+        
+        writefile(FolderName .. "/Configs/" .. ConfigName.Value .. ".json", 
+                 HttpService:JSONEncode(ConfigData))
+    end
+})
+
+ConfigSection:Button({
+    Title = "Load Config",
+    Callback = function()
+        if ConfigName.Value == "" then return end
+        
+        local FolderName = "4479Hub"
+        local Success, Data = pcall(function()
+            return HttpService:JSONDecode(
+                readfile(FolderName .. "/Configs/" .. ConfigName.Value .. ".json")
+            )
+        end)
+        
+        if Success and Data then
+            for Flag, Value in pairs(Data) do
+                if Bracket.Flags[Flag] then
+                    Bracket.Flags[Flag]:Set(Value)
+                end
+            end
+        end
+    end
+})
+
 ConfigSection:Button({
     Title = "Delete Config",
     Callback = function()
@@ -399,7 +451,7 @@ ConfigSection:Button({
     end
 })
 
-ConfigSection:Dropdown({
+local ConfigDropdown = ConfigSection:Dropdown({
     Title = "Select Config",
     List = Bracket.Utilities:GetConfigs("4479Hub"),
     Callback = function(Value)
@@ -410,7 +462,7 @@ ConfigSection:Dropdown({
 ConfigSection:Button({
     Title = "Refresh List",
     Callback = function()
-        local ConfigList = Bracket.Utilities:GetConfigs("4479Hub")
+        ConfigDropdown:Set(Bracket.Utilities:GetConfigs("4479Hub"))
     end
 })
 ```
