@@ -326,63 +326,6 @@ Section:Dropdown()
 Section:Colorpicker()
 ```
 
-### Config Section
-```lua
-Tab:AddConfigSection("FolderName", "Left")
-```
-
-local ConfigSection = Tab:Section({
-    Title = "Configuration",
-    Side = "Left"
-})
-
-local ConfigName = ConfigSection:Textbox({
-    Title = "Config Name",
-    Default = "",
-    Placeholder = "Enter config name..."
-})
-
-ConfigSection:Button({
-    Title = "Save Config",
-    Callback = function()
-        if ConfigName.Value == "" then return end
-        
-        local ConfigData = {}
-        for Flag, Element in pairs(Bracket.Flags) do
-            ConfigData[Flag] = Element.Value
-        end
-        
-        local FolderName = "4479Hub"
-        if not isfolder(FolderName) then makefolder(FolderName) end
-        if not isfolder(FolderName .. "/Configs") then makefolder(FolderName .. "/Configs") end
-        
-        writefile(FolderName .. "/Configs/" .. ConfigName.Value .. ".json", 
-                 HttpService:JSONEncode(ConfigData))
-    end
-})
-
-ConfigSection:Button({
-    Title = "Load Config",
-    Callback = function()
-        if ConfigName.Value == "" then return end
-        
-        local FolderName = "4479Hub"
-        local Success, Data = pcall(function()
-            return HttpService:JSONDecode(
-                readfile(FolderName .. "/Configs/" .. ConfigName.Value .. ".json")
-            )
-        end)
-        
-        if Success and Data then
-            for Flag, Value in pairs(Data) do
-                if Bracket.Flags[Flag] then
-                    Bracket.Flags[Flag]:Set(Value)
-                end
-            end
-        end
-    end
-})
-
 ## Configs Example
 ```lua
 local ConfigSection = Tab:Section({
