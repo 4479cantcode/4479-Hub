@@ -2721,28 +2721,34 @@ Bracket.Elements = {
 			return KeybindList
 		end
 
-		function Window.SaveConfig(Self, FolderName, Name)
-			local Config = {}
-			for Index, Element in pairs(Self.Elements) do
-				if Element.Flag and not Element.IgnoreFlag then
-					local Value = Self.Flags[Element.Flag]
+function Window.SaveConfig(Self, FolderName, Name)
+    if not FolderName or not Name or Name == "" then return end
+    
+    local Config = {}
+    for Index, Element in pairs(Self.Elements) do
+        if Element.Flag and not Element.IgnoreFlag then
+            local Value = Self.Flags[Element.Flag]
 
-					if Element.Type == "Colorpicker" then
-						Value = {Value[5] == true and 1 or Value[1], Value[2], Value[3], Value[4], Value[5]}
-					end
+            if Element.Type == "Colorpicker" then
+                Value = {Value[5] == true and 1 or Value[1], Value[2], Value[3], Value[4], Value[5]}
+            end
 
-					if Bracket.Utilities:DeepEquals(Element.Default, Value) then
-						continue
-					end
+            if Bracket.Utilities:DeepEquals(Element.Default, Value) then
+                continue
+            end
 
-					Config[Element.Flag] = Value
-				end
-			end
-			writefile(
-				FolderName .. "\\Configs\\" .. Name .. ".json",
-				HttpService:JSONEncode(Config)
-			)
-		end
+            Config[Element.Flag] = Value
+        end
+    end
+    
+    if not isfolder(FolderName) then makefolder(FolderName) end
+    if not isfolder(FolderName .. "\\Configs") then makefolder(FolderName .. "\\Configs") end
+    
+    writefile(
+        FolderName .. "\\Configs\\" .. Name .. ".json",
+        HttpService:JSONEncode(Config)
+    )
+end
 		function Window.LoadConfig(Self, FolderName, Name)
 			if table.find(Bracket.Utilities.GetConfigs(FolderName), Name) then
 				local DecodedJSON = HttpService:JSONDecode(
@@ -4225,90 +4231,113 @@ function Bracket:Window(Window)
 
 		Bracket.Elements.Tab(WindowAsset, Window, Tab)
 
-		function Tab.AddConfigSection(Self, FolderName, Side)
-			local ConfigSection = Self:Section({Name = "Config System", Side = Side}) do
-				local ConfigList = Bracket.Utilities.ConfigsToList(FolderName)
-				local AutoLoadConfig = Window:GetAutoLoadConfig(FolderName)
+function Tab.AddConfigSection(Self, FolderName, Side)
+    local ConfigSection = Self:Section({Name = "Config System", Side = Side})
+    
+    if not isfolder(FolderName) then makefolder(FolderName) end
+    if not isfolder(FolderName .. "\\Configs") then makefolder(FolderName .. "\\Configs") end
+    
+    local ConfigList = Bracket.Utilities.ConfigsToList(FolderName)
+    local AutoLoadConfig = Window:GetAutoLoadConfig(FolderName)
 
-				local ConfigDropdown = nil
-				local ConfigTextbox = nil
+    local ConfigDropdown = nil
+    local ConfigTextbox = nil
 
-				local function UpdateConfigList(Name)
-					ConfigDropdown:Clear()
-					ConfigList = Bracket.Utilities.ConfigsToList(FolderName)
-					ConfigDropdown:BulkAdd(ConfigList)
-					ConfigDropdown.Value = {}
-					-- ConfigDropdown.Value = {Name or (ConfigList[#ConfigList] and ConfigList[#ConfigList].Name)}
-				end
+    local function UpdateConfigList(Name)
+        local newConfigList = Bracket.Utilities.ConfigsToList(FolderName)
+        
+        ConfigDropdown.List = {}
+        ConfigDropdown:Clear()
+        
+        for _, config in ipairs(newConfigList) do
+            ConfigDropdown:AddOption(config)
+        end
+        
+        if Name then
+            ConfigDropdown.Value = {Name}
+        else
+            ConfigDropdown.Value = {}
+        end
+    end
 
-				ConfigTextbox = ConfigSection:Textbox({HideName = true, Placeholder = "Config Name", IgnoreFlag = true})
-				ConfigSection:Button({Name = "Create", Callback = function()
-					Window:SaveConfig(FolderName, ConfigTextbox.Value)
-					UpdateConfigList(ConfigTextbox.Value)
-				end})
+    ConfigTextbox = ConfigSection:Textbox({HideName = true, Placeholder = "Config Name", IgnoreFlag = true})
+    ConfigSection:Button({Name = "Create", Callback = function()
+        if ConfigTextbox.Value and ConfigTextbox.Value ~= "" then
+            Window:SaveConfig(FolderName, ConfigTextbox.Value)
+            task.wait(0.1)
+            UpdateConfigList(ConfigTextbox.Value)
+            ConfigTextbox.Value = ""
+        else
+            Bracket:Push({
+                Title = "Config System",
+                Description = "Enter a config name first",
+                Duration = 3
+            })
+        end
+    end})
+    ConfigSection:Button({Name = "Load", Callback = function()
+        if ConfigDropdown.Value and ConfigDropdown.Value[1] then
+            Window:LoadConfig(FolderName, ConfigDropdown.Value[1])
+            Bracket:Push({
+                Title = "Config System",
+                Description = "Config loaded successfully",
+                Duration = 3
+            })
+        else
+            Bracket:Push({
+                Title = "Config System",
+                Description = "Select Config First",
+                Duration = 3
+            })
+        end
+    end})
+    ConfigSection:Button({Name = "Delete", Callback = function()
+        if ConfigDropdown.Value and ConfigDropdown.Value[1] then
+            Window:DeleteConfig(FolderName, ConfigDropdown.Value[1])
+            task.wait(0.1)
+            UpdateConfigList()
+            Bracket:Push({
+                Title = "Config System",
+                Description = "Config deleted successfully",
+                Duration = 3
+            })
+        else
+            Bracket:Push({
+                Title = "Config System",
+                Description = "Select Config First",
+                Duration = 3
+            })
+        end
+    end})
+    ConfigSection:Button({Name = "Refresh", Callback = function()
+        UpdateConfigList()
+        Bracket:Push({
+            Title = "Config System",
+            Description = "Config list refreshed",
+            Duration = 2
+        })
+    end})
 
-				ConfigSection:Divider({Text = "Configs"})
+		local ConfigDivider = ConfigSection:Divider({Text = not AutoLoadConfig and "AutoLoad Config"
+        or "AutoLoad Config\n<font color=\"rgb(191, 191, 191)\">[ " .. AutoLoadConfig .. " ]</font>"})
 
-				ConfigDropdown = ConfigSection:Dropdown({HideName = true, IgnoreFlag = true, List = ConfigList})
-				-- ConfigDropdown.Value = {ConfigList[#ConfigList] and ConfigList[#ConfigList].Name}
-
-				ConfigSection:Button({Name = "Save", Callback = function()
-					if ConfigDropdown.Value and ConfigDropdown.Value[1] then
-						Window:SaveConfig(FolderName, ConfigDropdown.Value[1])
-					else
-						Bracket:Push({
-							Title = "Config System",
-							Description = "Select Config First",
-							Duration = 10
-						})
-					end
-				end})
-				ConfigSection:Button({Name = "Load", Callback = function()
-					if ConfigDropdown.Value and ConfigDropdown.Value[1] then
-						Window:LoadConfig(FolderName, ConfigDropdown.Value[1])
-					else
-						Bracket:Push({
-							Title = "Config System",
-							Description = "Select Config First",
-							Duration = 10
-						})
-					end
-				end})
-				ConfigSection:Button({Name = "Delete", Callback = function()
-					if ConfigDropdown.Value and ConfigDropdown.Value[1] then
-						Window:DeleteConfig(FolderName, ConfigDropdown.Value[1])
-						UpdateConfigList()
-					else
-						Bracket:Push({
-							Title = "Config System",
-							Description = "Select Config First",
-							Duration = 10
-						})
-					end
-				end})
-				ConfigSection:Button({Name = "Refresh", Callback = UpdateConfigList})
-
-				local ConfigDivider = ConfigSection:Divider({Text = not AutoLoadConfig and "AutoLoad Config"
-					or "AutoLoad Config\n<font color=\"rgb(191, 191, 191)\">[ " .. AutoLoadConfig .. " ]</font>"})
-
-				ConfigSection:Button({Name = "Set AutoLoad Config", Callback = function()
-					if ConfigDropdown.Value and ConfigDropdown.Value[1] then
-						Window:AddToAutoLoad(FolderName, ConfigDropdown.Value[1])
-						ConfigDivider.Text = "AutoLoad Config\n<font color=\"rgb(191, 191, 191)\">[ " .. ConfigDropdown.Value[1] .. " ]</font>"
-					else
-						Bracket:Push({
-							Title = "Config System",
-							Description = "Select Config First",
-							Duration = 10
-						})
-					end
-				end})
-				ConfigSection:Button({Name = "Clear AutoLoad Config", Callback = function()
-					Window:RemoveFromAutoLoad(FolderName)
-					ConfigDivider.Text = "AutoLoad Config"
-				end})
-			end
-		end
+    ConfigSection:Button({Name = "Set AutoLoad Config", Callback = function()
+        if ConfigDropdown.Value and ConfigDropdown.Value[1] then
+            Window:AddToAutoLoad(FolderName, ConfigDropdown.Value[1])
+            ConfigDivider.Text = "AutoLoad Config\n<font color=\"rgb(191, 191, 191)\">[ " .. ConfigDropdown.Value[1] .. " ]</font>"
+        else
+            Bracket:Push({
+                Title = "Config System",
+                Description = "Select Config First",
+                Duration = 3
+            })
+        end
+    end})
+    ConfigSection:Button({Name = "Clear AutoLoad Config", Callback = function()
+        Window:RemoveFromAutoLoad(FolderName)
+        ConfigDivider.Text = "AutoLoad Config"
+    end})
+end
 
 		function Tab.Divider(Self, Divider)
 			Divider = Bracket.Utilities:GetType(Divider, "table", {}, true)
